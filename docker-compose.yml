@@ -1,7 +1,7 @@
 version: '3'
 services:
   app:
-    image: proyecto-api
+    image: proyecto
     restart: always
     ports:
       - 80:80
@@ -17,7 +17,7 @@ services:
     image: postgres:9.4
     restart: always
     ports:
-      - 5432:5432
+      - 127.0.0.1:5432:5432
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
