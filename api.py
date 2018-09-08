@@ -20,21 +20,23 @@ db = SQLAlchemy(app)
 EXPIRATION_HOURS = 24
 
 
-@app.route("/ping", methods=['GET'])
+@app.route("/api/ping", methods=['GET'])
 def ping():
     return "pong"
 
-@app.route("/start_thread", methods=['POST'])
+@app.route("/api/start_thread", methods=['POST'])
 def track():
     req = request.get_json(force=True)
     app.logger.debug("Request: %s", req)
+    print("Spawining process")
     p = init_process(target=start_fetching, args=(req["topic"], req["end"], req["lang"]))
+    print("Running process")
     response = {"topic": req["topic"], "end": req["end"], "lang": req["lang"], "process": p.pid}
     app.logger.debug("Response: %s", response)
     return json.dumps(response)
 
 
-@app.route("/finish_thread", methods=['POST'])
+@app.route("/api/finish_thread", methods=['POST'])
 def finish():
     req = request.get_json(force=True)
     app.logger.debug("Request: %s", req)
@@ -43,7 +45,7 @@ def finish():
     return json.dumps(response)
 
 
-@app.route("/sign_up", methods=['POST'])
+@app.route("/api/sign_up", methods=['POST'])
 def sign_up():
     req = request.get_json(force=True)
     app.logger.debug("Request: %s", req)
@@ -58,7 +60,7 @@ def sign_up():
         {'name': user.name, 'token': token.decode('utf-8'), 'expire_utc': int(expiration_date.timestamp() * 1000)}), 200
 
 
-@app.route("/login", methods=['POST'])
+@app.route("/api/login", methods=['POST'])
 def login():
     req = request.get_json(force=True)
     name = req["name"]
@@ -83,7 +85,7 @@ def generateToken(user):
     return expiration_date, token
 
 
-@app.route("/topics", methods=["GET"])
+@app.route("/api/topics", methods=["GET"])
 def get_topics():
     token, error = validate_token(request.headers)
     if error:
@@ -93,7 +95,7 @@ def get_topics():
     return json.dumps([topic.to_dict() for topic in topics])
 
 
-@app.route("/topics", methods=["POST"])
+@app.route("/api/topics", methods=["POST"])
 def create_topic():
     token, error = validate_token(request.headers)
     if error:
@@ -105,7 +107,7 @@ def create_topic():
     return json.dumps(topic.to_dict())
 
 
-@app.route("/topics/<topic_id>/results", methods=['GET'])
+@app.route("/api/topics/<topic_id>/results", methods=['GET'])
 def get_results(topic_id):
     token, error = validate_token(request.headers)
     if error:
