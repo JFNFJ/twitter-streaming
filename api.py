@@ -183,6 +183,7 @@ def init_process(target, args):
 
 
 def query_results(topic_id):
+    topic = Topic.query.filter_by(id=topic_id).first()
     gr = GeneralResult.query.filter_by(topic_id=topic_id).all()[0].to_dict()
     lrs = []
     lr = LocationResult.query.filter_by(topic_id=topic_id).all()
@@ -192,7 +193,7 @@ def query_results(topic_id):
     er = EvolutionResult.query.filter_by(topic_id=topic_id).all()
     for e in er:
         ers.append(e.to_dict())
-    return {"generalResults": gr, "locationResults": lrs, "evolutionResults": ers}
+    return {**topic, "generalResults": gr, "locationResults": lrs, "evolutionResults": ers}
 
 
 if __name__ == '__main__':
